@@ -3,9 +3,7 @@
 /* ========== UPDATE THIS to your Web App URL (exec) ========== */
 const API_URL = "https://script.google.com/macros/s/AKfycbxr-1ttvbSK2wUGEkfS6sCA4Lh4V0okP8Kx38KCK_WdgZIEMuM6XMXMkmuTrSb-BP9m/exec";
 
-/* ---------- TEACHERS, ROOMS, TIMES (full lists) ---------- */
-/* (Use the full teacher list you provided; truncated here example-wise,
-   but below I'll paste a long list — replace with the full list if you want.) */
+/* ---------- MASTER LISTS ---------- */
 const TEACHERS = [
 "Dr. Sheak Rashed Haider Noori (SRH)","Dr. S.M Aminul Haque (SMAH)","Dr. Arif Mahmud (AM)",
 "Dr. Md. Fokhray Hossain (MFH)","Professor Dr. Md. Adnan Kiber (MAK)","Professor Dr. Fernaz Narin Nur (FNN)",
@@ -79,39 +77,35 @@ const TIMES = [
   "4:00 PM - 5:30 PM"
 ];
 
-/* ---------- helpers ---------- */
-function populateSelect(id, list, placeholder) {
+
+/* ---------- HELPERS ---------- */
+function populateSelect(id, list) {
   const sel = document.getElementById(id);
   if (!sel) return;
   sel.innerHTML = "";
-  // optional placeholder option removed to make selection easier when size>1
   list.forEach(v => {
     const o = document.createElement("option");
     o.value = v;
-    o.text = v;
+    o.textContent = v;
     sel.appendChild(o);
   });
 }
 
 function addFilter(filterId, selectId) {
-  const filt = document.getElementById(filterId);
-  const sel = document.getElementById(selectId);
-  if (!filt || !sel) return;
-  filt.addEventListener('input', () => {
-    const q = filt.value.trim().toLowerCase();
-    for (let i = 0; i < sel.options.length; i++) {
-      const opt = sel.options[i];
-      opt.style.display = opt.text.toLowerCase().includes(q) ? "" : "none";
-    }
-    // if filtered, keep first visible option selected
-    for (let i = 0; i < sel.options.length; i++) {
-      if (sel.options[i].style.display !== "none") { sel.selectedIndex = i; break; }
-    }
+  const f = document.getElementById(filterId);
+  const s = document.getElementById(selectId);
+  if (!f || !s) return;
+
+  f.addEventListener("input", () => {
+    const q = f.value.toLowerCase();
+    [...s.options].forEach(o => {
+      o.style.display = o.text.toLowerCase().includes(q) ? "" : "none";
+    });
   });
 }
 
-/* ---------- load lists and filters ---------- */
-window.addEventListener('DOMContentLoaded', () => {
+/* ---------- LOAD DROPDOWNS ON PAGE LOAD ---------- */
+window.addEventListener("DOMContentLoaded", () => {
   populateSelect("m_teacher", TEACHERS);
   populateSelect("k_teacher", TEACHERS);
   populateSelect("m_room", ROOMS);
@@ -126,76 +120,191 @@ window.addEventListener('DOMContentLoaded', () => {
   addFilter("m_time_filter", "m_time");
   addFilter("k_time_filter", "k_time");
 
-  // show watermark when teacher chosen
-  const mTeacher = document.getElementById("m_teacher");
-  const kTeacher = document.getElementById("k_teacher");
-  if (mTeacher) mTeacher.addEventListener('change', e => document.getElementById("m_teacher_watermark").textContent = e.target.value ? "Selected teacher: " + e.target.value : "");
-  if (kTeacher) kTeacher.addEventListener('change', e => document.getElementById("k_teacher_watermark").textContent = e.target.value ? "Selected teacher: " + e.target.value : "");
+  loadDashboard();
+  loadPendingMakeup();
 });
 
-/* ---------- submit using URLSearchParams (form-encoded) ---------- */
+/* ---------- POST HELPER ---------- */
 async function postForm(payload) {
-  const params = new URLSearchParams();
-  Object.keys(payload).forEach(k => params.append(k, payload[k] || ""));
-  const resp = await fetch(API_URL, { method: "POST", body: params });
-  const txt = await resp.text();
-  try { return JSON.parse(txt); } catch (err) { return { status: "error", message: "Invalid server response: " + txt }; }
+  const params = new URLSearchParams(payload);
+  const res = await fetch(API_URL, { method: "POST", body: params });
+  return await res.json();
 }
 
-/* ---------- Missed form submit ---------- */
-document.getElementById("missedForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const payload = {
-    action: "save_missed",
-    date: document.getElementById("m_date").value || "",
-    department: document.getElementById("m_dept").value.trim() || "",
-    course: document.getElementById("m_course").value.trim() || "",
-    room: document.getElementById("m_room").value || "",
-    timeSlot: document.getElementById("m_time").value || "",
-    teacherInitial: document.getElementById("m_teacher").value || "",
-    reason: document.getElementById("m_reason").value.trim() || ""
-  };
-  if (!payload.date || !payload.department || !payload.course || !payload.room || !payload.teacherInitial) {
-    alert("Please fill Date, Department, Course, Room and Teacher.");
-    return;
-  }
-  const res = await postForm(payload);
-  if (res.status === "success") {
-    alert("Missed Class Saved!");
-    this.reset();
-    document.getElementById("m_teacher_watermark").textContent = "";
-  } else {
-    alert("Failed: " + (res.message || "Unknown"));
-    console.error("Server returned:", res);
-  }
-});
+/* ================= MISSED CLASS ================= */
+document
+  .getElementById("missedForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-/* ---------- Makeup form submit ---------- */
-document.getElementById("makeupForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const payload = {
-    action: "save_makeup",
-    scheduleDate: document.getElementById("k_schedule").value || "",
-    department: document.getElementById("k_dept_m").value.trim() || "",
-    course: document.getElementById("k_course").value.trim() || "",
-    teacherInitial: document.getElementById("k_teacher").value || "",
-    makeupDate: document.getElementById("k_date").value || "",
-    makeupTime: document.getElementById("k_time").value || "",
-    makeupRoom: document.getElementById("k_room").value || "",
-    status: document.getElementById("k_status").value || "",
-    remarks: document.getElementById("k_remarks").value.trim() || ""
-  };
-  if (!payload.scheduleDate || !payload.department || !payload.course || !payload.teacherInitial || !payload.makeupDate || !payload.makeupTime || !payload.makeupRoom) {
-    alert("Please fill Schedule Date, Department, Course, Teacher, Makeup Date, Time and Room.");
-    return;
-  }
-  const res = await postForm(payload);
-  if (res.status === "success") {
-    alert("Makeup Class Saved!");
-    this.reset();
-    document.getElementById("k_teacher_watermark").textContent = "";
-  } else {
-    alert("Failed: " + (res.message || "Unknown"));
-    console.error("Server returned:", res);
-  }
-});
+    const payload = {
+      action: "save_missed",
+      date: m_date.value,
+      department: m_dept.value.trim(),
+      course: m_course.value.trim(),
+      room: m_room.value,
+      timeSlot: m_time.value,
+      teacherInitial: m_teacher.value,
+      reason: m_reason.value.trim()
+    };
+
+    const res = await postForm(payload);
+    if (res.status === "success") {
+      alert("Missed Class Saved!");
+      this.reset();
+      loadDashboard();
+    } else {
+      alert("Error saving missed class");
+    }
+  });
+
+/* ================= MAKEUP CLASS ================= */
+document
+  .getElementById("makeupForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const payload = {
+      action: "save_makeup",
+      scheduleDate: k_schedule.value,
+      department: k_dept.value.trim(),
+      course: k_course.value.trim(),
+      teacherInitial: k_teacher.value,
+      makeupDate: k_date.value,
+      makeupTime: k_time.value,
+      makeupRoom: k_room.value,
+      status: k_status.value,
+      remarks: k_remarks.value.trim()
+    };
+
+    if (
+      !payload.scheduleDate ||
+      !payload.department ||
+      !payload.course ||
+      !payload.teacherInitial ||
+      !payload.makeupDate ||
+      !payload.makeupTime ||
+      !payload.makeupRoom
+    ) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    const res = await postForm(payload);
+    if (res.status === "success") {
+      alert("Makeup Class Saved!");
+      this.reset();
+      loadPendingMakeup();
+      loadDashboard();
+    } else {
+      alert("Makeup save failed");
+      console.error(res);
+    }
+  });
+
+/* ================= PENDING LIST ================= */
+function updateMakeup(row) {
+  const status = document.getElementById(`status_${row}`).value;
+  const remarks = document.getElementById(`remarks_${row}`).value;
+
+  const url =
+    `${API_URL}?action=update_makeup` +
+    `&row=${row}` +
+    `&status=${encodeURIComponent(status)}` +
+    `&remarks=${encodeURIComponent(remarks)}`;
+
+  fetch(url)
+    .then(r => r.json())
+    .then(res => {
+      if (res.status === "success") {
+        alert("Updated successfully");
+        loadPendingMakeup();
+        loadDashboard();
+      } else {
+        alert("Update failed: " + res.message);
+      }
+    })
+    .catch(err => {
+      alert("Network error");
+      console.error(err);
+    });
+}
+function loadPendingMakeup() {
+  fetch(`${API_URL}?action=get_pending_makeup`)
+    .then(r => r.json())
+    .then(res => {
+      const tbody = document.querySelector("#pendingTable tbody");
+      if (!tbody) return;
+
+      tbody.innerHTML = "";
+
+      if (!res.data || res.data.length === 0) {
+        tbody.innerHTML =
+          `<tr><td colspan="9">No pending makeup classes</td></tr>`;
+        return;
+      }
+
+      res.data.forEach(row => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${row.scheduleDate}</td>
+          <td>${row.department}</td>
+          <td>${row.course}</td>
+          <td>${row.teacher}</td>
+          <td>${row.makeupDate}</td>
+          <td>${row.time}</td>
+          <td>${row.room}</td>
+
+          <td>
+            <select id="status_${row.row}">
+              <option value="Pending" selected>Pending</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </td>
+
+          <td>
+            <input type="text" id="remarks_${row.row}" value="${row.remarks || ""}">
+            <br>
+            <button onclick="updateMakeup(${row.row})">Update</button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      console.error("Pending load error:", err);
+    });
+}
+
+/* ================= UPDATE STATUS ================= */
+function updateStatus(row, scheduleDate) {
+  const remarks = document.getElementById(`remarks_${row}`).value;
+  fetch(
+    `${API_URL}?action=update_makeup&row=${row}&status=Completed&remarks=${encodeURIComponent(
+      remarks
+    )}&scheduleDate=${scheduleDate}`
+  )
+    .then(r => r.json())
+    .then(r => {
+      if (r.status === "success") {
+        alert("Updated");
+        loadPendingMakeup();
+        loadDashboard();
+      } else {
+        alert("Update failed");
+      }
+    });
+}
+
+/* ================= DASHBOARD ================= */
+function loadDashboard() {
+  fetch(`${API_URL}?action=get_dashboard`)
+    .then(r => r.json())
+    .then(d => {
+      totalMissed.innerText = d.totalMissed || 0;
+      completed.innerText = d.completed || 0;
+      pending.innerText = d.pending || 0;
+    });
+}
