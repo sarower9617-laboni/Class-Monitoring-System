@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Class Monitoring System</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0A7E4A">
+
+  <!-- STYLE -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= DASHBOARD ================= -->
+<section class="dashboard">
+  <div class="card highlight">
+    <span>Total Missed</span>
+    <strong id="totalMissed">0</strong>
+  </div>
+  <div class="card">
+    <span>Makeup Completed</span>
+    <strong id="completed">0</strong>
+  </div>
+  <div class="card">
+    <span>Makeup Pending</span>
+    <strong id="pending">0</strong>
+  </div>
+  <div class="card">
+    <span>Extra Classes</span>
+    <strong id="extraCount">0</strong>
+  </div>
+</section>
+
+<!-- ================= HEADER ================= -->
+<header class="header">
+  <img src="icon-512.svg" alt="Logo" class="logo">
+  <h1>Class Monitoring App</h1>
+  <p>Missed &amp; Makeup Class Monitoring — CSE, DIU</p>
+</header>
+
+<!-- ================= MAIN ================= -->
+<main class="container">
+
+  <!-- ================= ROUTINE MASTER ================= -->
+  <section class="section routine-master">
+    <h2>📘 Routine Master</h2>
+    <p class="hint">
+      Upload once per semester. Used for routine automation, clash checking and QR validation.
+    </p>
+
+    <form id="routineUploadForm" class="inline-form">
+      <input type="file" id="routineFile" accept=".xlsx,.csv">
+      <button type="button" id="uploadRoutineBtn">
+        Upload & Activate
+      </button>
+    </form>
+
+    <small class="note">
+      Admin only. Uploading will replace the existing routine.
+    </small>
+  </section>
+
+  <!-- ================= CONTROLS ================= -->
+  <div class="controls">
+    <button id="btn-missed">Missed Class (Admin)</button>
+    <button id="btn-makeup">Makeup Class (Admin)</button>
+    <button id="btn_pending">Pending Makeup</button>
+  </div>
+
+  <!-- ================= MISSED CLASS ================= -->
+  <section id="missedForm" class="section form hidden">
+    <h2>❌ Missed Class Entry</h2>
+    <p class="hint">Manual entry only for emergency/admin use.</p>
+
+    <div class="grid-2">
+      <label>
+        Date
+        <input type="date" id="m_date" required>
+      </label>
+
+      <label>
+        Department
+        <input class="smart-filter" data-target="m_dept" placeholder="Search department">
+        <select id="m_dept" required></select>
+      </label>
+    </div>
+
+    <div class="grid-2">
+      <label>
+        Course (Section)
+        <input class="smart-filter" data-target="m_course" placeholder="Search course">
+        <select id="m_course" required></select>
+      </label>
+
+      <label>
+        Room
+        <input class="smart-filter" data-target="m_room" placeholder="Search room">
+        <select id="m_room" required></select>
+      </label>
+    </div>
+
+    <div class="grid-2">
+      <label>
+        Time Slot
+        <input class="smart-filter" data-target="m_time" placeholder="Search time slot">
+        <select id="m_time" required></select>
+      </label>
+
+      <label>
+        Teacher Initial
+        <input class="smart-filter" data-target="m_teacher" placeholder="Search teacher">
+        <select id="m_teacher" required></select>
+      </label>
+    </div>
+
+    <label>
+      Reason
+      <select id="m_reason" required>
+        <option value="">Select reason</option>
+        <option>Leave</option>
+        <option>Sick</option>
+        <option>Meeting</option>
+        <option>Student Absent</option>
+        <option>Both are Absent</option>
+        <option>Emergency</option>
+      </select>
+    </label>
+
+    <button class="submit">Save Missed Class</button>
+  </section>
+
+  <!-- ================= MAKEUP CLASS ================= -->
+  <section id="makeupForm" class="section form hidden">
+    <h2>✅ Makeup Class Entry</h2>
+    <p class="hint">Routine clashes will be checked automatically.</p>
+
+    <div class="grid-2">
+      <label>
+        Original Schedule Date
+        <input type="date" id="k_schedule" required>
+      </label>
+
+      <label>
+        Department
+        <input class="smart-filter" data-target="k_dept">
+        <select id="k_dept" required></select>
+      </label>
+    </div>
+
+    <div class="grid-2">
+      <label>
+        Course (Section)
+        <input class="smart-filter" data-target="k_course">
+        <select id="k_course" required></select>
+      </label>
+
+      <label>
+        Teacher Initial
+        <input class="smart-filter" data-target="k_teacher">
+        <select id="k_teacher" required></select>
+      </label>
+    </div>
+
+    <div class="grid-2">
+      <label>
+        Makeup Date
+        <input type="date" id="k_date" required>
+      </label>
+
+      <label>
+        Makeup Time
+        <input class="smart-filter" data-target="k_time">
+        <select id="k_time" required></select>
+      </label>
+    </div>
+
+    <div class="grid-2">
+      <label>
+        Makeup Room
+        <input class="smart-filter" data-target="k_room">
+        <select id="k_room" required></select>
+      </label>
+
+      <label>
+        Status
+        <select id="k_status">
+          <option>Pending</option>
+          <option>Completed</option>
+        </select>
+      </label>
+    </div>
+
+    <input id="k_remarks" placeholder="Attendance / recording link">
+
+    <button class="submit">Save Makeup Class</button>
+  </section>
+
+  <!-- ================= PENDING ================= -->
+  <section id="pendingSection" class="section form hidden">
+    <h2>⏳ Pending Makeup Classes</h2>
+
+    <input
+      id="pendingTeacherSearch"
+      class="filter"
+      placeholder="Search by teacher initial">
+
+    <div class="table-wrap">
+      <table id="pendingTable">
+        <thead>
+          <tr>
+            <th>Schedule</th>
+            <th>Dept</th>
+            <th>Course</th>
+            <th>Teacher</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Room</th>
+            <th>Status</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <small>
+    Developed by the Class Monitoring Committee<br>
+    Department of CSE, Daffodil International University
+  </small>
+</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script src="script.js" defer></script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>
