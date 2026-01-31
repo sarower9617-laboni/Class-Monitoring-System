@@ -2,7 +2,7 @@
    CONFIG
 ========================================================= */
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbx480vZkSf2kQYxjk4zaJ0fxs2KA3yu_EQUNeZlRYFQ9TOb5VZtwYlsG30f4iQR2k9P/exec";
+  "https://script.google.com/macros/s/AKfycbyeFwZ761GS776jve8y-UJQQy-u0nWsnowfl25-Bcqh0rBXxUm23Q9uaAEe7hVqtCfwKA/exec";
 
 const SPREADSHEET_ID = "1U5kHGV3ZlFkixyG_av7LN9ZIRGVLUq6Rsf3RKaaDzvs";
 
@@ -339,3 +339,4 @@ window.addEventListener("scroll", () => {
     logo.style.visibility = "visible";
   }
 });
+
