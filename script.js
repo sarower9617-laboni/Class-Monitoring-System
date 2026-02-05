@@ -1,6 +1,4 @@
-/* =========================================================
-   CONFIG (GITHUB SAFE)
-========================================================= */
+/* ================= CONFIG ================= */
 const API_URL =
   "https://script.google.com/macros/s/AKfycbwFlDrplCzmYeykNATmV8mR86RZmAaJpC8zJTi_pfpjMiMGgtdp8ZkwN8c2k4fFXbaSUA/exec";
 
@@ -343,3 +341,4 @@ function searchEmptyRooms() {
     }
   });
 }
+
