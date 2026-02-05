@@ -1,0 +1,385 @@
+/* ================= ROOT ================= */
+:root{
+  --accent:#317efb;
+  --bg:#f4f6f9;
+  --card:#ffffff;
+  --radius:12px;
+}
+
+/* ================= RESET ================= */
+*{
+  box-sizing:border-box;
+}
+
+html, body{
+  margin:0;
+  padding:0;
+  width:100%;
+  overflow-x:hidden;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+}
+
+.hidden{ display:none !important; }
+
+/* ================= DASHBOARD ================= */
+.dashboard{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  flex-wrap:wrap;
+  padding:14px 10px;
+  background:#fff;
+  border-bottom:1px solid #e5e7eb;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.dashboard .card{
+  background:var(--card);
+  padding:10px 6px;
+  border-radius:10px;
+  min-width:150px;
+  text-align:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
+
+  /* Unified text style */
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:0.3px;
+  color:#555;
+}
+
+.dashboard .card span{
+  display:block;
+  margin-top:4px;
+  font-size:20px;
+  font-weight:600;
+  line-height:1.2;
+  color:#111;
+}
+
+/* Dashboard color status */
+.dashboard .card.total-missed span { color:#2563eb; } /* blue */
+.dashboard .card:nth-child(2) span { color:#16a34a; } /* green */
+.dashboard .card:nth-child(3) span { color:#f97316; } /* orange */
+.dashboard .card:nth-child(4) span { color:#7c3aed; } /* purple */
+
+/* ================= HEADER ================= */
+header{
+  text-align:center;
+  padding:24px 12px 28px;
+  background:linear-gradient(90deg,var(--accent),#2a66d1);
+  color:#fff;
+}
+
+/* Title */
+header h1{
+  margin:0;
+  font-size:26px;
+  font-weight:900;
+  background:linear-gradient(90deg,#ffeb3b,#ffffff,#00e5ff);
+  background-size:300% 300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:titleGradient 6s ease infinite;
+}
+
+header .subtitle{
+  margin-top:6px;
+  font-size:14px;
+  font-weight:600;
+  color:#e0f7fa;
+}
+
+/* ================= MAIN LOGO ================= */
+.app-logo{
+  width:90px;
+  height:90px;
+  object-fit:contain;
+  pointer-events:none;
+  animation:logoPulse 3s ease-in-out infinite;
+}
+
+/* ================= CONTAINER ================= */
+.container{
+  max-width:860px;
+  margin:18px auto;
+  background:var(--card);
+  padding:18px;
+  border-radius:var(--radius);
+}
+
+/* ================= CONTROLS ================= */
+.controls{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+
+button{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:12px 16px;
+  border-radius:10px;
+  cursor:pointer;
+  min-height:46px;
+  flex:1;
+  font-weight:600;
+}
+
+button:active{ transform:scale(.97); }
+
+/* ================= FORMS ================= */
+.form{ margin-top:14px; }
+
+.grid{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+label{
+  flex:1 1 240px;
+  font-size:13px;
+  position:relative;
+}
+
+input, select{
+  width:100%;
+  padding:11px;
+  margin-top:6px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  font-size:14px;
+}
+
+/* ================= FILTER ================= */
+.filter::placeholder{
+  color:#9ca3af;
+  font-size:12px;
+}
+
+/* ================= SUBMIT ================= */
+.submit{
+  background:#1b9a59;
+  margin-top:12px;
+  font-weight:700;
+}
+
+/* ================= TABLE ================= */
+.table-wrap{
+  overflow-x:auto;
+  margin-top:12px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th, td{
+  border:1px solid #e5e7eb;
+  padding:8px;
+  font-size:13px;
+}
+
+th{
+  background:#f3f4f6;
+  font-weight:600;
+}
+
+/* ================= MOBILE DROPDOWN STABLE ================= */
+select{
+  appearance:none;
+  -webkit-appearance:none;
+  background:#fff;
+}
+
+select[size]{
+  max-height:200px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+@media (max-width:600px){
+  select[size]{ font-size:16px; }
+}
+
+/* ================= FOOTER ================= */
+footer{
+  margin:20px auto;
+  text-align:center;
+  padding:14px 10px;
+  max-width:860px;
+  border-radius:12px;
+  background:linear-gradient(90deg,#317efb,#1b9a59,#ff9800);
+  background-size:300% 300%;
+  animation:footerGradient 6s ease infinite;
+}
+
+footer small{
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width:600px){
+  header h1{ font-size:22px; }
+  .app-logo{ width:72px; height:72px; }
+
+  .grid{ flex-direction:column; }
+
+  .dashboard{
+    gap:10px;
+  }
+
+  .dashboard .card{
+    min-width:140px;
+    font-size:11px;
+  }
+
+  .dashboard .card span{
+    font-size:18px;
+  }
+
+  button{
+    font-size:16px;
+  }
+
+  input, select{
+    font-size:16px;
+  }
+}
+
+/* ================= DARK MODE ================= */
+@media (prefers-color-scheme: dark){
+  body{ background:#0f172a; color:#e5e7eb; }
+  header{ background:#020617; }
+  .container, .card, table{ background:#020617; }
+  input, select, button{
+    background:#020617;
+    border:1px solid #334155;
+    color:#e5e7eb;
+  }
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes footerGradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+@keyframes titleGradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+@keyframes logoPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+}
+
+/* ❌ REMOVE TOP-LEFT DIU ICON (BROWSER / FIXED) */
+link[rel="icon"],
+link[rel="apple-touch-icon"]{
+  display:none !important;
+}
+
+```css
+/* =========================================================
+   👉 ONLY FOR EMPTY ROOM CHECK – SMART “INSIDE BOX” DESIGN  
+   (ADD THIS AT THE BOTTOM OF YOUR style.css — DO NOT CHANGE OTHERS)
+========================================================= */
+
+/* ======== EMPTY ROOM CHECK WRAPPER (NICE CARD) ======== */
+#emptyRoomSection{
+  margin-top:16px;
+  background:#ffffff;
+  padding:16px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+
+/* Section Title */
+#emptyRoomSection h2{
+  margin:0 0 10px 0;
+  font-size:18px;
+  font-weight:800;
+  color:#0f172a;
+}
+
+/* ======== SEARCH BAR + BUTTON ROW ======== */
+.empty-room-search-bar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+/* Search Input */
+#emptyRoomSearch{
+  flex:1;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  font-size:14px;
+  background:#f8fafc;
+}
+
+/* Search & Reset Buttons (inside box only) */
+.empty-room-search-bar button{
+  flex:none;
+  min-height:42px;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:700;
+  box-shadow:0 4px 10px rgba(49,126,251,.20);
+}
+
+/* ======== EMPTY ROOM TABLE (CLEAN LOOK) ======== */
+#emptyRoomTable{
+  border-radius:10px;
+  overflow:hidden;
+}
+
+/* Table Header */
+#emptyRoomTable th{
+  background:#f1f5f9;
+  font-weight:700;
+}
+
+/* Row Hover Effect */
+#emptyRoomTable tbody tr:hover td{
+  background:#f8fafc;
+}
+
+/* Book Button (inside empty room box only) */
+#emptyRoomTable .book-btn{
+  background:#1b9a59;
+  padding:8px 12px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:700;
+  box-shadow:0 3px 8px rgba(27,154,89,.20);
+}
+
+/* ======== MOBILE (ONLY EMPTY ROOM BOX) ======== */
+@media (max-width:600px){
+  .empty-room-search-bar{
+    flex-direction:column;
+  }
+
+  .empty-room-search-bar button{
+    width:100%;
+  }
+}
+```

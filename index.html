@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Class Monitoring System</title>
+
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0A7E4A">
+
+  <!-- STYLE -->
+  <link rel="stylesheet" href="style.css">
+   
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+</head>
+
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+  <div style="text-align:center;background:#fff;padding:30px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.15);max-width:320px;width:100%;">
+    <h2>Class Monitoring System</h2>
+    <p style="font-size:14px;color:#555;">Sign in with DIU Email</p>
+    <div id="gSignInBtn"></div>
+  </div>
+</div>
+
+<!-- ================= APP ROOT ================= -->
+<div id="appRoot" style="display:none;">
+
+<!-- ================= DASHBOARD ================= -->
+<section class="dashboard">
+  <div class="card total-missed">
+    <span>Total Missed</span>
+    <strong id="totalMissed">0</strong>
+  </div>
+
+  <div class="card">
+    <span>Makeup Completed</span>
+    <strong id="completed">0</strong>
+  </div>
+
+  <div class="card">
+    <span>Makeup Pending</span>
+    <strong id="pending">0</strong>
+  </div>
+
+  <div class="card">
+    <span>Extra Classes</span>
+    <strong id="extraCount">0</strong>
+  </div>
+</section>
+
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="logo-wrap">
+    <img src="icon-512.svg" class="app-logo" alt="Logo">
+  </div>
+  <h1>Class Monitoring App</h1>
+  <p class="subtitle">Missed & Makeup Class Entry — CSE-DIU</p>
+</header>
+
+<!-- ================= CONTROLS ================= -->
+<div class="controls">
+  <button id="btn-missed">Missed Class Entry</button>
+  <button id="btn-makeup">Makeup Class Entry</button>
+  <button id="btn_pending">Pending Makeup</button>
+  <button id="btn_empty">Empty Room Check</button>
+</div>
+
+<!-- ================= MAIN ================= -->
+<main class="container">
+
+<!-- ================= MISSED ================= -->
+<form id="missedForm" class="form hidden" autocomplete="off">
+  <h2>Missed Class Entry</h2>
+
+  <div class="grid">
+    <label>Date <input type="date" id="m_date" required></label>
+    <label>Department
+      <select id="m_dept">
+        <option value="">Select</option>
+        <option value="CSE">CSE</option>
+        <option value="Others">Others</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="grid">
+    <label>Course <select id="m_course"></select></label>
+    <label>Room <select id="m_room"></select></label>
+  </div>
+
+  <div class="grid">
+    <label>Time <select id="m_time"></select></label>
+    <label>Teacher <select id="m_teacher"></select></label>
+  </div>
+
+  <label>Reason
+    <select id="m_reason">
+      <option value="">Select</option>
+      <option>Leave</option>
+      <option>Sick</option>
+      <option>Meeting</option>
+      <option>Absent</option>
+      <option>Emergency</option>
+    </select>
+  </label>
+
+  <button type="submit" class="submit">Submit Missed</button>
+</form>
+
+<!-- ================= MAKEUP ================= -->
+<form id="makeupForm" class="form hidden" autocomplete="off">
+  <h2>Makeup Class Entry</h2>
+
+  <div class="grid">
+    <label>Schedule Day <input type="date" id="k_schedule"></label>
+    <label>Department
+      <select id="k_dept">
+        <option value="">Select</option>
+        <option value="CSE">CSE</option>
+        <option value="Others">Others</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="grid">
+    <label>Course <select id="k_course"></select></label>
+    <label>Teacher <select id="k_teacher"></select></label>
+  </div>
+
+  <div class="grid">
+    <label>Makeup Date <input type="date" id="k_date"></label>
+    <label>Time <select id="k_time"></select></label>
+  </div>
+
+  <div class="grid">
+    <label>Room <select id="k_room"></select></label>
+    <label>Status
+      <select id="k_status">
+        <option>Pending</option>
+        <option>Completed</option>
+      </select>
+    </label>
+  </div>
+
+  <input type="text" id="k_remarks" placeholder="If completed, provide attendance / recording link">
+  <button type="submit" class="submit">Save Makeup Class</button>
+</form>
+
+<!-- ================= PENDING ================= -->
+  <section id="pendingSection" class="form hidden">
+    <h2>Pending Makeup Classes</h2>
+
+    <input
+      id="pendingTeacherSearch"
+      class="filter"
+      placeholder="Search by Teacher Initial…">
+
+    <div class="table-wrap">
+      <table id="pendingTable">
+        <thead>
+          <tr>
+            <th>Schedule</th>
+            <th>Dept</th>
+            <th>Course</th>
+            <th>Teacher</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Room</th>
+            <th>Status</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= EMPTY ROOM CHECK ================= -->
+<section id="emptyRoomSection" class="form hidden">
+  <h2>Available (Empty) Rooms</h2>
+
+  <div style="margin-bottom: 12px; display:flex; gap:8px; align-items:center;">
+    <input type="text" id="emptyRoomSearch" placeholder="Search room or time..."
+           style="padding:6px; width:250px;">
+    <button onclick="searchEmptyRooms()">Search</button>
+    <button onclick="loadEmptyRooms()">Reset</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="emptyRoomTable">
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Time Slot</th>
+          <th>Room</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="4" style="text-align:center;">
+            Click "Empty Room Check" to load data…
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <small>Developed by CSE Department — DIU</small>
+</footer>
+
+</div><!-- appRoot -->
+
+<!-- ================= MAIN SCRIPT ================= -->
+<script src="script.js" defer></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const missedForm = document.getElementById("missedForm");
+  const makeupForm = document.getElementById("makeupForm");
+  const pendingSection = document.getElementById("pendingSection");
+  const emptyRoomSection = document.getElementById("emptyRoomSection");
+
+  btn("btn-missed", () => show(missedForm));
+  btn("btn-makeup", () => show(makeupForm));
+  btn("btn_pending", () => show(pendingSection));
+  btn("btn_empty", () => {
+    show(emptyRoomSection);
+    loadEmptyRooms();   // load only when clicked
+  });
+
+  function btn(id, fn){ document.getElementById(id).onclick = fn; }
+
+  function show(el){
+    [missedForm, makeupForm, pendingSection, emptyRoomSection]
+      .forEach(x=>x.classList.add("hidden"));
+    el.classList.remove("hidden");
+  }
+
+});
+</script>
+
+<!-- ================= SERVICE WORKER ================= -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>
