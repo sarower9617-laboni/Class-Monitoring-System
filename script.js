@@ -1,7 +1,6 @@
 /* =========================================================
-   =====================  script.js  =======================
-   ========================================================= */
-
+   CONFIG (GITHUB SAFE)
+========================================================= */
 const API_URL =
   "https://script.google.com/macros/s/AKfycbxS-YsYiH9aU11c9ZbasJIkdsS7u2mwktd7thK4ATeOa0z0i3QEEU5Es0qlsV4QBEzaAA/exec";
 
@@ -295,4 +294,5 @@ function searchEmptyRooms() {
     }
   });
 }
+
 
